@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="드론 항공사진에서 AI가 자동으로 주차된 차량을 감지하고 카운팅합니다">
+    <title>🚗 스마트 주차장 차량 카운팅 | AI Drone Vision</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- 배경 애니메이션 -->
+    <div class="background-animation">
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        <div class="floating-orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🛸</span>
+                <div class="logo-text">
+                    <h1>AI Drone Vision</h1>
+                    <span class="tagline">스마트 주차장 차량 카운팅</span>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge-dot"></span>
+                <span>YOLOv8 Powered</span>
+            </div>
+        </header>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <!-- 업로드 섹션 -->
+            <section class="upload-section" id="uploadSection">
+                <div class="section-header">
+                    <h2>📸 드론 사진 업로드</h2>
+                    <p>주차장 항공 사진을 업로드하면 AI가 차량을 자동으로 감지합니다</p>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg,image/webp" hidden>
+                    <div class="upload-content">
+                        <div class="upload-icon">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17,8 12,3 7,8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <h3>이미지를 드래그하거나 클릭하세요</h3>
+                        <p>PNG, JPG, JPEG, WEBP (최대 16MB)</p>
+                    </div>
+                    <div class="upload-preview" id="uploadPreview" style="display: none;">
+                        <img id="previewImage" src="" alt="미리보기">
+                        <button class="btn btn-secondary" id="removePreview">다른 이미지 선택</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-large" id="analyzeBtn" disabled>
+                    <span class="btn-icon">🔍</span>
+                    <span>차량 분석 시작</span>
+                </button>
+            </section>
+
+            <!-- 로딩 상태 -->
+            <section class="loading-section" id="loadingSection" style="display: none;">
+                <div class="loading-content">
+                    <div class="loading-spinner">
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                    </div>
+                    <h2>AI가 차량을 분석 중입니다...</h2>
+                    <p>YOLOv8 모델이 이미지를 처리하고 있습니다</p>
+                    <div class="loading-progress">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 결과 섹션 -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <div class="section-header">
+                    <h2>📊 분석 결과</h2>
+                    <button class="btn btn-secondary" id="newAnalysisBtn">
+                        <span>+ 새 분석</span>
+                    </button>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-stats">
+                        <div class="stat-item stat-main">
+                            <span class="stat-value" id="carCount">0</span>
+                            <span class="stat-label">탐지된 차량</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="fileName">-</span>
+                            <span class="stat-label">파일명</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="analysisTime">-</span>
+                            <span class="stat-label">분석 시간</span>
+                        </div>
+                    </div>
+
+                    <div class="result-images">
+                        <div class="image-compare">
+                            <div class="image-box">
+                                <h4>원본 이미지</h4>
+                                <div class="image-wrapper">
+                                    <img id="originalImage" src="" alt="원본">
+                                </div>
+                            </div>
+                            <div class="image-box">
+                                <h4>탐지 결과</h4>
+                                <div class="image-wrapper">
+                                    <img id="resultImage" src="" alt="결과">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 히스토리 섹션 -->
+            <section class="history-section" id="historySection">
+                <div class="section-header">
+                    <h2>📋 분석 히스토리</h2>
+                    <button class="btn btn-ghost" id="refreshHistoryBtn">
+                        <span>🔄 새로고침</span>
+                    </button>
+                </div>
+
+                <div class="history-list" id="historyList">
+                    <div class="history-empty" id="historyEmpty">
+                        <span class="empty-icon">📭</span>
+                        <p>아직 분석 기록이 없습니다</p>
+                        <span>드론 사진을 업로드하여 첫 분석을 시작하세요</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터 -->
+        <footer class="footer">
+            <p>Powered by <strong>YOLOv8</strong> & <strong>Flask</strong> | 
+               Built with ❤️ for Smart Parking Solutions</p>
+        </footer>
+    </div>
+
+    <!-- 이미지 모달 -->
+    <div class="modal" id="imageModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <img id="modalImage" src="" alt="확대 이미지">
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

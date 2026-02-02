@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 가상환경
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 로컬 설정
+.env
+.env.local
+*.local
+
+# SQLite 데이터베이스
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# 업로드된 이미지 (사용자 데이터)
+static/uploads/*
+static/results/*
+!static/uploads/.gitkeep
+!static/results/.gitkeep
+
+# YOLO 모델 캐시
+*.pt
+runs/
+ultralytics/
+
+# OS 파일
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 로그
+*.log
+logs/
+
+# 테스트
+.pytest_cache/
+.coverage
+htmlcov/
