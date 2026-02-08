@@ -35,6 +35,13 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/favicon.ico')
+def favicon():
+    """브라우저 호환성을 위한 favicon.ico 라우트"""
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.svg', mimetype='image/svg+xml')
+
+
 @app.route('/api/upload', methods=['POST'])
 def upload_image():
     """이미지를 업로드하고 차량을 탐지합니다."""
@@ -65,14 +72,15 @@ def upload_image():
         file.save(upload_path)
         
         # 차량 탐지 수행
-        car_count = detect_cars(upload_path, result_path)
+        car_count, details = detect_cars(upload_path, result_path)
         
         # 결과를 데이터베이스에 저장
         detection_id = save_detection(
             original_filename=original_filename,
             upload_path=f"/static/uploads/{upload_filename}",
             result_path=f"/static/results/{result_filename}",
-            car_count=car_count
+            car_count=car_count,
+            details=details
         )
         
         # 저장된 결과 조회
@@ -80,7 +88,8 @@ def upload_image():
         
         return jsonify({
             'success': True,
-            'detection': detection
+            'detection': detection,
+            'details': details
         })
         
     except Exception as e:
@@ -152,6 +161,11 @@ def model_info():
     return jsonify(info)
 
 
+@app.route('/sw.js')
+def service_worker():
+    return app.send_static_file('sw.js')
+
+
 if __name__ == '__main__':
     # 필요한 디렉토리 생성
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -162,5 +176,6 @@ if __name__ == '__main__':
     
     # 개발 서버 실행
     print("🚗 드론 사진 차량 카운팅 서버 시작...")
-    print("📍 http://localhost:5000 에서 접속하세요")
+    print("🖥️ Initial Window Size: 2062x991 (Recommended)")
+    print("📍 http://localhost:5000")
     app.run(debug=True, host='0.0.0.0', port=5000)

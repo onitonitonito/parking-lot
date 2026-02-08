@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+    <!-- Alien Green Glow Background -->
+    <defs>
+        <radialGradient id="glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" style="stop-color:rgba(0, 240, 255, 0.4);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:transparent;stop-opacity:0" />
+        </radialGradient>
+        <filter id="neon" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+    </defs>
+    
+    <!-- Background Glow -->
+    <circle cx="128" cy="128" r="120" fill="url(#glow)" />
+    
+    <!-- UFO Body -->
+    <g transform="translate(28, 68) scale(0.8)">
+        <!-- Dome -->
+        <path d="M100,50 C130,50 150,70 150,90 L50,90 C50,70 70,50 100,50 Z" fill="#00f0ff" stroke="#fff" stroke-width="4" opacity="0.8" />
+        
+        <!-- Saucer -->
+        <ellipse cx="100" cy="110" rx="120" ry="40" fill="#333" stroke="#00f0ff" stroke-width="4" filter="url(#neon)" />
+        <ellipse cx="100" cy="100" rx="120" ry="35" fill="#1a1a2e" />
+        
+        <!-- Lights -->
+        <circle cx="40" cy="110" r="6" fill="#ff003c" />
+        <circle cx="70" cy="125" r="6" fill="#ff003c" />
+        <circle cx="100" cy="130" r="8" fill="#00f0ff" />
+        <circle cx="130" cy="125" r="6" fill="#ff003c" />
+        <circle cx="160" cy="110" r="6" fill="#ff003c" />
+        
+        <!-- Beam -->
+        <path d="M70,140 L40,220 L160,220 L130,140 Z" fill="url(#glow)" opacity="0.5" />
+    </g>
+</svg>

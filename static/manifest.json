@@ -1,0 +1,29 @@
+{
+    "name": "AI Drone Vision Car Counter",
+    "short_name": "DroneVision",
+    "description": "AI-powered car counting dashboard for drone imagery.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#0a0a12",
+    "theme_color": "#00f0ff",
+    "icons": [
+        {
+            "src": "/static/favicon.svg",
+            "sizes": "192x192 256x256 512x512",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "/static/favicon.svg",
+            "sizes": "192x192 256x256 512x512",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ],
+    "categories": [
+        "productivity",
+        "utilities"
+    ]
+}

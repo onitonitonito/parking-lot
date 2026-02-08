@@ -35,15 +35,26 @@ def detect_cars(image_path, output_path):
     """
     model = load_model()
     
-    # 차량 관련 클래스 ID (COCO 데이터셋 기준: 2=car, 5=bus, 7=truck)
-    vehicle_classes = [2, 5, 7]
+    # 차량 관련 클래스 ID (COCO 데이터셋 기준)
+    # 0: person, 2: car, 3: motorcycle, 5: bus, 7: truck
+    target_classes = {
+        0: 'person', 
+        2: 'car', 
+        3: 'motorcycle', 
+        5: 'bus', 
+        7: 'truck'
+    }
     
     # RT-DETR 추론 수행
-    # RT-DETR은 구조적으로 작은 객체와 밀집된 객체에 강점이 있습니다.
     # imgsz=640 혹은 1024 정도로 설정하여 정확도와 속도의 균형을 맞춥니다.
     results = model(image_path, imgsz=1024, conf=0.15, verbose=False)
     
-    car_count = 0
+    total_vehicles = 0
+    details = {
+        'breakdown': {'car': 0, 'bus': 0, 'truck': 0, 'motorcycle': 0, 'person': 0, 'other': 0},
+        'objects': []  # 히트맵 및 상세 분석용 데이터
+    }
+    
     result_saved = False
     
     for result in results:
@@ -53,13 +64,37 @@ def detect_cars(image_path, output_path):
         if boxes is not None and len(boxes) > 0:
             for box in boxes:
                 cls_id = int(box.cls[0])
+                conf = float(box.conf[0])
                 
-                # 차량 클래스인 경우만 카운트
-                if cls_id in vehicle_classes:
-                    car_count += 1
+                # 타겟 클래스인 경우만 처리
+                if cls_id in target_classes:
+                    label = target_classes[cls_id]
+                    
+                    # 수량 집계
+                    if label in details['breakdown']:
+                        details['breakdown'][label] += 1
+                    else:
+                        details['breakdown']['other'] += 1
+                        
+                    # 차량(Vehicle)인 경우 총계에 합산 (사람 제외)
+                    if cls_id in [2, 3, 5, 7]:
+                        total_vehicles += 1
+                    
+                    # 객체 정보 저장 (히트맵용 좌표 포함)
+                    # xywh: center_x, center_y, width, height
+                    xywh = box.xywh[0].tolist()
+                    details['objects'].append({
+                        'class': label,
+                        'confidence': round(conf, 2),
+                        'x': int(xywh[0]),
+                        'y': int(xywh[1]),
+                        'w': int(xywh[2]),
+                        'h': int(xywh[3])
+                    })
         
         # 결과 이미지 저장
         try:
+            # 시각화할 때는 모든 탐지 결과 표시 (사람 포함)
             plotted = result.plot(
                 labels=True,
                 conf=True,
@@ -81,7 +116,7 @@ def detect_cars(image_path, output_path):
         except Exception as e:
             print(f"원본 이미지 백업 오류: {e}")
     
-    return car_count
+    return total_vehicles, details
 
 
 def get_model_info():
@@ -90,5 +125,6 @@ def get_model_info():
         'name': 'RT-DETR (Transformer)',
         'description': 'Real-Time Detection Transformer',
         'resolution': '1024px',
-        'vehicle_classes': ['car', 'bus', 'truck']
+        'vehicle_classes': ['car', 'bus', 'truck', 'motorcycle'],
+        'other_classes': ['person']
     }
