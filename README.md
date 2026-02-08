@@ -1,6 +1,6 @@
-1. # 🚁 드론 사진 차량 카운팅 앱
+# 🚁 드론 사진 차량 카운팅 앱
 
-> 야외 주차장의 드론 항공사진을 업로드하면 **YOLOv8 AI**가 자동으로 차량을 감지하고 카운팅하는 웹 애플리케이션입니다.
+> 야외 주차장의 드론 항공사진을 업로드하면 **RT-DETR (Transformer) AI**가 자동으로 차량을 감지하고 카운팅하는 웹 애플리케이션입니다.
 
 
 
@@ -11,7 +11,7 @@
 ## 🛠 기술 스택
 
 - 🔹 **백엔드**: Python, Flask
-- 🤖 **AI 모델**: YOLOv8 (ultralytics)
+- 🤖 **AI 모델**: RT-DETR (Real-Time Detection Transformer)
 - 🗄 **데이터베이스**: SQLite3
 - 🎨 **프론트엔드**: HTML, JavaScript, Vanilla CSS (SPA)
 
@@ -85,7 +85,7 @@ python app.py
    parking-lot/
    ├── app.py              # Flask 메인 앱
    ├── database.py         # SQLite3 DB 관리
-   ├── detector.py         # YOLOv8 차량 탐지
+   ├── detector.py         # RT-DETR 차량 탐지
    ├── requirements.txt    # Python 의존성
    ├── templates/
    │   └── index.html      # SPA 메인 페이지
@@ -128,7 +128,7 @@ python app.py
 
 - Flask 앱 초기화
 - SQLite 데이터베이스 설정
-- YOLOv8을 이용한 차량 카운팅 로직 구현
+- RT-DETR을 이용한 고정밀 차량 카운팅 로직 구현
 - API 엔드포인트 생성 (업로드, 히스토리)
 
 ### 📌 3️⃣ 프론트엔드 구현 [ ]
@@ -150,7 +150,7 @@ python app.py
 
 # 🧩 [Build] 차량 카운팅 앱 구현 계획
 
-> 드론으로 촬영한 야외 주차장 사진에서 **YOLOv8**을 사용하여 차량을 자동으로 카운팅하고, 모던한 **SPA 인터페이스**와 **SQLite3 히스토리 관리 기능**을 제공하는 앱입니다.
+> 드론으로 촬영한 야외 주차장 사진에서 **RT-DETR**을 사용하여 차량을 자동으로 카운팅하고, 모던한 **SPA 인터페이스**와 **SQLite3 히스토리 관리 기능**을 제공하는 앱입니다.
 
 ---
 
@@ -167,8 +167,8 @@ python app.py
 
 >### 🟡 NOTE
 >
->차량 탐지에는 `ultralytics`의 **YOLOv8n 모델**을 사용합니다.
->이 모델은 항공 사진에서의 차량 탐지에 효율적이고 정확합니다.
+>차량 탐지에는 `ultralytics`의 **RT-DETR-L 모델**을 사용합니다.
+>이 모델은 트랜스포머 구조를 사용하여 고밀도 주차장 및 작은 객체 탐지에 최상급 성능을 발휘합니다.
 
 ---
 
@@ -178,9 +178,9 @@ python app.py
 
 ### 🔧 백엔드 (Python / Flask)
 
-- 🆕 `app.py`: 라우팅 및 YOLO 로직을 처리하는 메인 Flask 애플리케이션
+- 🆕 `app.py`: 라우팅 및 RT-DETR 로직을 처리하는 메인 Flask 애플리케이션
 - 🆕 `database.py`: SQLite3 데이터베이스 스키마 및 헬퍼 함수
-- 🆕 `detector.py`: YOLOv8 차량 탐지 로직 래퍼
+- 🆕 `detector.py`: RT-DETR 차량 탐지 로직 래퍼
 
 
 
@@ -225,7 +225,31 @@ python app.py
 
 ## 🧪 릴리즈 노트
 
-1. **v1.0-Release.a1-1** - 2026-02-02
-2. 
+### 🚀 v2.0-Transformer-Upgrade (2026-02-08)
+
+> **"Small Object Detection" 성능의 혁신적 개선**
+> 기존 YOLOv8n 모델의 한계였던 작은 차량 및 밀집된 객체 인식 실패 문제를 해결하기 위해, 최신 트랜스포머 아키텍처를 도입했습니다.
+
+- **✨ Major Changes**
+  - **AI 엔진 전면 교체**: `YOLOv8n (Nano)` → **`RT-DETR-L (Large Transformer)`**
+    - CNN이 아닌 Transformer 기반 모델을 사용하여 전역적인 문맥 파악 능력 강화
+    - 오탐(False Positive)과 미탐(False Negative)을 동시에 줄이는 고성능 모델 도입
+  - **초고해상도 추론 적용**:
+    - 기존 `640px` → **`1024px`**로 입력 해상도 약 2.5배 상향
+    - 드론 항공 사진에서 아주 작게 보이는 차량(Small Objects) 식별력 극대화
+
+- **🔧 Optimizations**
+  - **임계값(Confidence) 미세 조정**: `0.25` → `0.15` (놓치는 차량을 최소화하기 위한 공격적 튜닝)
+  - **안정성 강화**: `numpy < 2.0` 및 `opencv-python < 4.10` 등 핵심 라이브러리 의존성 충돌 해결
+
+- **🎨 UI/UX**
+  - Web Interface에 현재 구동 중인 AI 엔진 정보(RT-DETR) 실시간 표시
+  - 분석 로딩 화면 메시지 업데이트
+
+---
+
+### v1.0-Release.a1-1 (2026-02-02)
+- 초기 버전 릴리즈 (YOLOv8n 기반)
+- 기본 웹 인터페이스 및 업로드 기능 구현 
 
     
